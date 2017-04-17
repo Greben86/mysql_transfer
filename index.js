@@ -1,0 +1,1 @@
+var reader = require('./reader.js');reader.start('config.txt');

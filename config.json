@@ -1,0 +1,19 @@
+{
+    "database": {
+        "mysql": {
+            "host": "localhost",
+            "user": "root",
+            "password": "123",
+            "database": "accept_group"
+        },
+        "firebird": {
+            "host": "localhost",
+            "port": "3050",
+            "database": "demo6"
+        }
+    },
+    "tables": {
+        "types": "UC_8",
+        "marks": "UC_10"
+    }
+}

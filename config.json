@@ -9,11 +9,11 @@
         "firebird": {
             "host": "localhost",
             "port": "3050",
-            "database": "demo6"
+            "database": "D:\\accept_group.fdb"
         }
     },
     "tables": {
-        "types": "UC_8",
-        "marks": "UC_10"
+        "types": "UC_1",
+        "marks": "UC_2"
     }
 }

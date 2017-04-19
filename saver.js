@@ -29,7 +29,7 @@ function recursiveInsertUsers(db, users, index, callback){
 		(users[index].fullname+"").substr(0, 30), 
 		(users[index].email+"").substr(0, 30),
 		ActiveToSwitchOff(users[index].active),
-		"930023ae91342d9ac1dd8d75eeebb844"], 
+		"D41D8CD98F00B204E9800998ECF8427E"], 
 		function(err, result) {
 			if (err) {
 				console.error(err);
@@ -116,14 +116,13 @@ function recursiveInsertClients(config, db, clients, index, callback){
 	db.transaction(Firebird.ISOLATION_READ_COMMITED, function(err, transaction) {								
 		transaction.query(
 		"UPDATE OR INSERT INTO customer ("+
-		"  id_ext, name, fullname, prim, website, inn, curator, specialist, region, city, "+config.tables.types+", "+config.tables.marks+", "+
+		"  id_ext, name, fullname, prim, website, inn, curator, specialist, region, city, "+config.tables.types+", "+config.tables.marks+", address, "+
 		"  custtype, folder, owner, regdate, actual_time, privateclient"+
 		") VALUES ("+
-		"  ?, ?, ?, ?, ?, ?, (select first(1) id from users where id_ext=?), "+
-		"  (select first(1) id from users where id_ext=?), (select first(1) id from places where name=?), "+
-		"  (select first(1) id from places where name=?), "+
+		"  ?, ?, ?, ?, ?, ?, (select first(1) id from users where id_ext=?), (select first(1) id from users where id_ext=?), "+
+		"  (select first(1) id from places where name containing ?), (select first(1) id from places where name=?), "+
 		"  (select first(1) id from "+config.tables.types+" where name=?), (select first(1) id from "+config.tables.marks+" where name=?), "+
-		"  1, 1, 0, current_timestamp, current_timestamp, 'F'"+
+		"  ?, 1, 1, 0, current_timestamp, current_timestamp, 'F'"+
 		") MATCHING (id_ext)", 
 		[clients[index].id,
 		(clients[index].org+"").substr(0, 200),
@@ -136,7 +135,8 @@ function recursiveInsertClients(config, db, clients, index, callback){
 		clients[index].region,
 		clients[index].city,
 		clients[index].typeorg,
-		clients[index].typemark],
+		clients[index].typemark,
+		clients[index].region + " " + clients[index].city],
 		function(err, result) {
 			if (err) {
 				console.error(err);
@@ -217,25 +217,6 @@ function DoneTask(value) {
 	}
 }
 
-function TypeTask(value) {
-	switch (value) {
-		case 'call':
-			return '[Звонок] ';
-			break;
-		case 'call_repeat': 
-			return '[Повторный звонок] ';
-			break;
-		case 'kp': 
-			return '[КП] ';
-			break;
-		case 'monitor': 
-			return '[Мониторинг] ';
-			break;
-		default: 
-			return "[" + value + "] ";
-	}
-}
-
 function recursiveInsertTasks(db, tasks, index, callback){
 	if (index < 0){
 		callback();
@@ -254,7 +235,7 @@ function recursiveInsertTasks(db, tasks, index, callback){
 		[tasks[index].date, 
 		tasks[index].date, 
 		tasks[index].date,
-		TypeTask(tasks[index].type) + tasks[index].text,
+		"[" + tasks[index].type + "] " + tasks[index].text,
 		StatusTask(tasks[index].status),
 		tasks[index].user,
 		tasks[index].user,

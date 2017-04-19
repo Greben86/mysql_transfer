@@ -56,10 +56,11 @@ function readTypes(config, callback) {
 
 function readClients(config, callback){
 	connection.query(
-		'SELECT c.`id`, c.`org`, c.`id_region`, c.`comment`, c.`manager`, c.`site`, c.`inn`, c.`city`, t.`value` AS `typeorg`, m.`value` AS typemark, 0 AS `region` '+
+		'SELECT c.`id`, c.`org`, c.`id_region`, c.`comment`, c.`manager`, c.`site`, c.`inn`, c.`city`, t.`value` AS `typeorg`, m.`value` AS typemark, r.`name` AS `region` '+
 		'FROM `sn_client` AS c '+
 		'  LEFT JOIN `sn_type_org` AS t ON (t.`id`=c.`id_typeorg`) '+
-		'  LEFT JOIN `sn_type_mark` AS m ON (m.`id`=c.`mark`) limit 1000', [], function(err, result) {
+		'  LEFT JOIN `sn_type_mark` AS m ON (m.`id`=c.`mark`) '+
+		'  LEFT JOIN `sn_region` AS r ON (r.`id`=c.`id_region`)', [], function(err, result) {
 		
 		if (err)
 			throw err;
@@ -73,7 +74,7 @@ function readClients(config, callback){
 }
 
 function readContacts(config, callback){
-	connection.query('SELECT `id`, `id_client`, `name`, `email`, `phone` FROM `sn_contact` limit 1000', [], function(err, result) {
+	connection.query('SELECT `id`, `id_client`, `name`, `email`, `phone` FROM `sn_contact`', [], function(err, result) {
 	
 		if (err)
 			throw err;
@@ -87,7 +88,9 @@ function readContacts(config, callback){
 }
 
 function readTasks(config, callback){
-	connection.query('SELECT `date`, `type`, `text`, `status`, `user`, `id_client` FROM `sn_task` limit 1000', [], function(err, result) {
+	connection.query('SELECT t.`date`, t.`text`, t.`status`, t.`user`, t.`id_client`, tt.`value` AS `type` '+
+		'FROM `sn_task` AS t '+
+		'  LEFT JOIN `sn_task_type` AS tt ON (t.`type`=tt.`id`)', [], function(err, result) {
 
 		if (err)
 			throw err;
